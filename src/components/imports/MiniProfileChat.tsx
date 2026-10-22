@@ -1,84 +1,117 @@
+
 import { Image, StyleSheet, Text, View } from 'react-native';
 
 type MiniProfileChatProps = {
-    image: any;
-    name: string;
-    note: string;
-    isOnline: boolean;
+  image: any;
+  name: string;
+  note: string;
+  isOnline: boolean;
 };
 
-export function MiniProfileChat (props: MiniProfileChatProps) {
+export function MiniProfileChat(props: MiniProfileChatProps) {
+  return (
+    <View style={styles.container}>
+      <View style={styles.profileCont}>
+        <Image
+          style={styles.profilePic}
+          source={props.image}
+          resizeMode="cover"
+        />
 
-    return (
+        <View
+          style={[
+            styles.isOnline,
+            {
+              backgroundColor: props.isOnline
+                ? '#2DBE75'
+                : '#AAAAAA',
+            },
+          ]}
+        />
+      </View>
 
-        <View style={styles.container}>
-            <View style={styles.profileCont}>
-                <Image style={styles.profilePic} source={props.image}/>
-                <View style={[styles.isOnline, {backgroundColor: props.isOnline ? 'green' : 'red',}]}> </View>
-            </View>
+      <View style={styles.nameCont}>
+        <Text style={styles.name} numberOfLines={1}>
+          {props.name}
+        </Text>
 
-            <View style={styles.nameCont}>
-                <Text style={styles.name}>{props.name}</Text>
-                <Text style={styles.note}>{props.note}</Text>
-            </View>
-       
-        </View>
-   
-    );
+        <Text style={styles.note} numberOfLines={1}>
+          {props.isOnline ? 'Online now' : props.note}
+        </Text>
+      </View>
+
+      <View style={styles.headerIcon}>
+        <Text style={styles.iconText}>⋯</Text>
+      </View>
+    </View>
+  );
 }
 
-const styles = StyleSheet.create ({
+const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    minHeight: 78,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
 
+  profileCont: {
+    width: 48,
+    height: 48,
+    position: 'relative',
+    marginRight: 12,
+  },
 
-    container: {
-        width: '100%',
-        height: '15%',
-        flexDirection: 'row',
-        backgroundColor: 'orange',
-        justifyContent: 'flex-start',
-        padding: 10,
-        alignItems: 'center',
+  profilePic: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 24,
+    backgroundColor: '#F8E8EC',
+  },
 
-    },
+  isOnline: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
 
-    profileCont: {
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '25%',
-        
-    },
+  nameCont: {
+    flex: 1,
+    justifyContent: 'center',
+  },
 
-    profilePic: {
-        height: 100,
-        width: 100,
-        borderRadius: 50,
-    },
+  name: {
+    fontSize: 17,
+    fontWeight: 'bold',
+    color: '#222222',
+  },
 
-    isOnline: {
-        position: 'absolute',
-        right: 15,
-        bottom: 5,
-        borderRadius: 10,
-        width: 22,
-        height: 22,
-        borderWidth: 2,
-        borderColor: 'black',
-    },
+  note: {
+    fontSize: 12,
+    color: '#888888',
+    marginTop: 4,
+  },
 
-    nameCont: {
-       width: '35%' ,
-       height: '100%',
-       marginLeft: 20,
-    },
+  headerIcon: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-    name: {
-        fontSize: 36,
-        fontWeight: 'bold',
-    },
-
-    note: {
-        fontSize: 21,      
-    },
-
-})
+  iconText: {
+    fontSize: 27,
+    color: '#666666',
+    lineHeight: 30,
+  },
+});

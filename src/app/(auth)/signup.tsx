@@ -1,149 +1,311 @@
+
 import { router } from 'expo-router';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function SignupScreen () {
+import { AuthButton } from '@/components/imports/AuthButton';
+import { AuthInput } from '@/components/imports/AuthInput';
+
+export default function SignupScreen() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [age, setAge] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+
   return (
-  <SafeAreaView style={{flex: 1}}>
-  <View style={styles.background}>
-    <View style={styles.mainCont}>
-      <Text style={styles.title}>Create Account</Text>
-      
-      <Text style={styles.Description}>First Name</Text>
-      <TextInput style={styles.Input} placeholder='Enter First Name' 
-      placeholderTextColor="rgba(0, 0, 0, 0.4)">
-      </TextInput>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            {/* Branding */}
+            <View style={styles.brandContainer}>
+              <View style={styles.logoCircle}>
+                <Text style={styles.logo}>♥</Text>
+              </View>
 
-      <Text style={styles.Description}>Last Name</Text>
-      <TextInput style={styles.Input} placeholder='Enter Last Name' 
-      placeholderTextColor="rgba(0, 0, 0, 0.4)" >
-      </TextInput>
+              <Text style={styles.brandName}>Date-Mate</Text>
+              <Text style={styles.tagline}>
+                Your next connection starts here.
+              </Text>
+            </View>
 
-      <Text style={styles.Description}>Username</Text>
-      <TextInput style={styles.Input} placeholder='Enter Username' 
-      placeholderTextColor="rgba(0, 0, 0, 0.4)" >
-      </TextInput>
+            {/* Sign Up Form */}
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Create Account</Text>
+              <Text style={styles.description}>
+                Join Date-Mate and start meeting new people.
+              </Text>
 
-      <Text style={styles.Description}>Age</Text>
-      <TextInput style={styles.Input} placeholder='Enter Age' 
-      placeholderTextColor="rgba(0, 0, 0, 0.4)" >
-      </TextInput>
+              <View style={styles.nameRow}>
+                <View style={styles.nameField}>
+                  <AuthInput
+                    label="First Name"
+                    placeholder="First name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="words"
+                  />
+                </View>
 
-      <Text style={styles.Description}>Password</Text>
-      <TextInput style={styles.Input} placeholder='Enter Password' 
-      secureTextEntry={true}
-      placeholderTextColor="rgba(0, 0, 0, 0.4)">
-      </TextInput>
+                <View style={styles.nameField}>
+                  <AuthInput
+                    label="Last Name"
+                    placeholder="Last name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="words"
+                  />
+                </View>
+              </View>
 
-      <View style={styles.accountHandling}>
-        <View style={styles.rememberMeCont}>
-          <View style={styles.checkBox}></View>
-          <Text style={styles.rememberMe}>Remember Me</Text>
-        </View>
-        <Text style={styles.forgPass}>Forgot Password</Text>
+              <AuthInput
+                label="Username"
+                placeholder="Choose a username"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+              />
 
-      </View>
+              <AuthInput
+                label="Age"
+                placeholder="Enter your age"
+                value={age}
+                onChangeText={(text) =>
+                  setAge(text.replace(/[^0-9]/g, ''))
+                }
+                keyboardType="number-pad"
+              />
 
-      <TouchableOpacity style={styles.regBtn} onPress={() => router.replace('/(tabs)/home')}>
-        <Text style={styles.regText}>Register</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-  </SafeAreaView>
+              <AuthInput
+                label="Password"
+                placeholder="Create a password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
 
+              {/* Remember me */}
+              <TouchableOpacity
+                style={styles.rememberContainer}
+                onPress={() => setRememberMe(!rememberMe)}
+                activeOpacity={0.7}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    rememberMe && styles.checkboxChecked,
+                  ]}
+                >
+                  {rememberMe && (
+                    <Text style={styles.checkmark}>✓</Text>
+                  )}
+                </View>
+
+                <Text style={styles.rememberText}>
+                  Remember me on this device
+                </Text>
+              </TouchableOpacity>
+
+              {/* Create Account */}
+              <View style={styles.buttonContainer}>
+                <AuthButton
+                  title="Create Account"
+                  onPress={() => router.replace('/(auth)/login')}
+                />
+              </View>
+
+              {/* Login navigation */}
+              <View style={styles.loginRow}>
+                <Text style={styles.loginPrompt}>
+                  Already have an account?
+                </Text>
+
+                <TouchableOpacity
+                  onPress={() => router.replace('/(auth)/login')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.loginLink}> Log in</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <Text style={styles.footer}>
+              Make connections. Be yourself. ♥
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create ({
-
-  background: {
+const styles = StyleSheet.create({
+  safeArea: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
   },
-  mainCont: {
-    justifyContent: 'center',
+
+  keyboardContainer: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+  },
+
+  container: {
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 24,
+  },
+
+  brandContainer: {
     alignItems: 'center',
-    width: "100%",
-    height: "80%",
+    marginBottom: 26,
+  },
+
+  logoCircle: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    backgroundColor: '#FFF0F3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+
+  logo: {
+    fontSize: 29,
+    color: '#E85D75',
+  },
+
+  brandName: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#E85D75',
+  },
+
+  tagline: {
+    fontSize: 13,
+    color: '#777777',
+    marginTop: 4,
+    textAlign: 'center',
+  },
+
+  formContainer: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    backgroundColor: 'grey'
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#252525',
   },
 
-  Description: {
-    width: '80%',
-    fontSize: 16,
-    fontWeight: 'bold',
-    
-    marginBottom: 5,
-    marginTop: 10,
-   
-    
+  description: {
+    fontSize: 13,
+    color: '#777777',
+    lineHeight: 20,
+    marginTop: 6,
+    marginBottom: 22,
   },
 
-  Input: {
-    width: '80%',
-    height: '5%',
-    backgroundColor: 'white',
-    borderRadius: 100,
-    
-    
-    paddingLeft: 15,
-  },
-
-  accountHandling: {
-    height: '4%',
-    width: '80%',
+  nameRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignSelf: 'center',
+    gap: 12,
   },
 
-  rememberMeCont: {
+  nameField: {
+    flex: 1,
+    minWidth: 0,
+  },
+
+  rememberContainer: {
     flexDirection: 'row',
-    marginTop: 10,
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    marginTop: -2,
+    marginBottom: 22,
   },
 
-  checkBox: {
-    height: 10,
-    width: 10,
-    backgroundColor: 'white',
-    margin: 5 ,
-  },
-
-  rememberMe: {
-    textDecorationLine: 'underline',
-    
-  },
-
-  forgPass: {
-    textDecorationLine: 'underline',
-    marginTop: 10,
-  },
-
-
-  regBtn: {
-    backgroundColor: 'blue',
-    width: '80%',
-    height: '8%',
-    borderRadius: 100,
+  checkbox: {
+    width: 19,
+    height: 19,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#D5C7CB',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 20,
+    marginRight: 9,
   },
 
-  regText: {
-    color: 'white',
-    fontSize: 20,
+  checkboxChecked: {
+    backgroundColor: '#E85D75',
+    borderColor: '#E85D75',
+  },
+
+  checkmark: {
+    color: '#FFFFFF',
+    fontSize: 13,
     fontWeight: 'bold',
   },
 
+  rememberText: {
+    color: '#555555',
+    fontSize: 13,
+  },
 
+  buttonContainer: {
+    width: '100%',
+  },
 
+  loginRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginTop: 22,
+  },
 
-})
+  loginPrompt: {
+    fontSize: 13,
+    color: '#777777',
+  },
+
+  loginLink: {
+    fontSize: 13,
+    color: '#E85D75',
+    fontWeight: 'bold',
+  },
+
+  footer: {
+    fontSize: 12,
+    color: '#AAAAAA',
+    textAlign: 'center',
+    marginTop: 25,
+  },
+});

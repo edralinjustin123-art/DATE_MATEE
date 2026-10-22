@@ -1,156 +1,247 @@
+
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 type DateMateCardProps = {
+  profileId: string;
   photo: any;
   name: string;
   age: string;
   status: string;
-  message: string;  
+  message: string;
 };
 
- export function DateMateCard(props: DateMateCardProps) {
-  
-    const [liked, setLiked] = useState(false);
-      const [skip, setSkip] = useState(true);
-        
-        if (!skip) {
-        return <TouchableOpacity style={styles.nextCard} onPress={ () => setSkip(true)}>
-                  <Text style={styles.nextCardtxt}>Find more DateMate</Text>
-                </TouchableOpacity>;
-        }
-    
-        return (
-          <View style={styles.cardCont}>
-            <Image style={styles.profilePic} 
-            source={props.photo}/>
-    
-            <Text style={styles.name}>{props.name}</Text>
-            <Text style={styles.age}>{props.age} yrs old</Text> 
-    
-            <View style={styles.statusCont}>
-              <View style={styles.statusCircle}></View>
-              <Text style={styles.status}>{props.status}</Text>
-            </View>
-    
-            <Text style={styles.message}>{props.message}</Text>
-    
-            <View style={styles.btnCont}>
-              <TouchableOpacity style={styles.skipBtn} onPress={  () => setSkip(false)}>
-                <Text style={styles.skipBtntxt}>Skip</Text>
-              </TouchableOpacity>
-    
-              <TouchableOpacity style={styles.heartBtn} onPress={ () => setLiked(!liked)}>
-                <Text style={styles.heartBtntxt}>{liked ? 'Liked' : 'Unlike'}</Text>
-              </TouchableOpacity>
-              </View>
-          </View>
-        );
+export default function DateMateCard({
+  profileId,
+  photo,
+  name,
+  age,
+  status,
+  message,
+}: DateMateCardProps) {
+  const [liked, setLiked] = useState(false);
+  const [skipped, setSkipped] = useState(false);
+
+  if (skipped) {
+    return (
+      <View style={styles.skippedCard}>
+        <Text style={styles.skippedText}>
+          {name} was skipped
+        </Text>
+
+        <Pressable
+          style={styles.restoreButton}
+          onPress={() => setSkipped(false)}
+        >
+          <Text style={styles.restoreButtonText}>Restore Profile</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.card}>
+      <Image source={photo} style={styles.photo} />
+
+      <View style={styles.statusBadge}>
+        <View
+          style={[
+            styles.statusDot,
+            status.toLowerCase() === 'online'
+              ? styles.onlineDot
+              : styles.offlineDot,
+          ]}
+        />
+        <Text style={styles.statusText}>{status}</Text>
+      </View>
+
+      <View style={styles.cardContent}>
+        <Text style={styles.name}>
+          {name}, {age}
+        </Text>
+
+        <Text style={styles.message}>{message}</Text>
+
+        <Pressable
+          style={styles.viewProfileButton}
+          onPress={() =>
+            router.push({
+              pathname: '/profile/[id]',
+              params: { id: profileId },
+            })
+          }
+        >
+          <Text style={styles.viewProfileText}>View Profile</Text>
+        </Pressable>
+
+        <View style={styles.actionRow}>
+          <Pressable
+            style={styles.skipButton}
+            onPress={() => setSkipped(true)}
+          >
+            <Text style={styles.skipButtonText}>Skip</Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.likeButton,
+              liked && styles.likedButton,
+            ]}
+            onPress={() => setLiked(!liked)}
+          >
+            <Text style={styles.likeButtonText}>
+              {liked ? '♥ Liked' : '♡ Like'}
+            </Text>
+          </Pressable>
+        </View>
+
+        {liked && (
+          <Text style={styles.likedMessage}>
+            You liked {name}!
+          </Text>
+        )}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-
-  nextCard: {
-    height: 50,
-    width: 200,
+  card: {
+  width: 280,
+  minHeight: 450,
+  backgroundColor: '#FFFFFF',
+  borderRadius: 22,
+  overflow: 'hidden',
+  borderWidth: 1,
+  borderColor: '#F3DDE2',
+  marginRight: 16,
+},
+  photo: {
+    width: '100%',
+    height: 235,
+    resizeMode: 'cover',
+  },
+  statusBadge: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
   },
-
-  nextCardtxt: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
   },
-
-  cardCont: {
-    backgroundColor: 'white',
-    width: 200,
-    height:  400,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 50,
+  onlineDot: {
+    backgroundColor: '#35B66A',
   },
-
-  profilePic: {
-    height: 70,
-    width: 70,
+  offlineDot: {
+    backgroundColor: '#999999',
   },
-
+  statusText: {
+    fontSize: 12,
+    color: '#444444',
+  },
+  cardContent: {
+    padding: 16,
+  },
   name: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'black'
+    color: '#292929',
+    marginBottom: 6,
   },
-
-  age: {
-    fontSize: 24,
-    color: 'black'
-  },
-
-  statusCont: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    
-  },
-
-  statusCircle: {
-    height: 10,
-    width: 10,
-    backgroundColor: 'green',
-    borderRadius: 10,
-    margin: 5,
-  },
-
-  status: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black'
-  },
-
   message: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: 'black'
+    fontSize: 14,
+    color: '#777777',
+    marginBottom: 14,
   },
-
-  btnCont: {
+  viewProfileButton: {
+    alignItems: 'center',
+    backgroundColor: '#FCE8EC',
+    borderRadius: 12,
+    paddingVertical: 10,
+    marginBottom: 12,
+  },
+  viewProfileText: {
+    color: '#E85D75',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
+  actionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: 150,
-    marginTop: 15,
+    gap: 10,
   },
-
-  skipBtn: {
-    height: 50,
-    width: 50,
-    borderRadius: 20,
-    backgroundColor: 'grey',
+  skipButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#E85D75',
+    borderRadius: 12,
+  },
+  skipButtonText: {
+    color: '#E85D75',
+    fontWeight: '600',
+  },
+  likeButton: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 10,
+    backgroundColor: '#E85D75',
+    borderRadius: 12,
+  },
+  likedButton: {
+    backgroundColor: '#C94460',
+  },
+  likeButtonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  likedMessage: {
+    color: '#E85D75',
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 12,
+  },
+  skippedCard: {
+    width: 280,
+    minHeight: 150,
+    marginRight: 16,
+    padding: 20,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#F3DDE2',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
   },
-
-  skipBtntxt: {
+  skippedText: {
+    color: '#555555',
+    fontSize: 16,
+    marginBottom: 14,
+  },
+  restoreButton: {
+    backgroundColor: '#FCE8EC',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  restoreButtonText: {
+    color: '#E85D75',
     fontWeight: 'bold',
-    color: 'white',
   },
-
-  heartBtn: {
-    height: 50,
-    width: 50,
-    borderRadius: 20,
-    backgroundColor: 'red',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  heartBtntxt: {
-    fontWeight: 'bold',
-    color: 'white',
-  },
-})
+});
